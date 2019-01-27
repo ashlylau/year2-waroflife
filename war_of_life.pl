@@ -5,6 +5,12 @@
 :- use_module(library(ordsets)).
 :- use_module(library(random)).
 
+
+%%%%%%%%%%%%%%%%%%%% Checking Board Representation
+initial_board_state :-
+	[[[1,1],[2,6],[3,4],[3,5],[3,8],[4,1],[4,2],[5,7],[6,2],[7,1],[7,3],[7,5]],[[1,8],[2,2],[2,8],[3,7],[4,6],[5,3],[6,6],[7,6],[7,7],[7,8],[8,3],[8,7]]].
+
+
 %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% PLAYING THE GAME: BASIC CONTROL
@@ -340,7 +346,9 @@ show_winner(verbose, 'Exhaust', Num) :-
 show_winner(verbose, 'Draw', Num) :-
  format('Game is drawn after ~w moves!~n~n', [Num]).
 
+show_winner(verbose, 'Stalemate', Num) :-
+ format('Game is drawn in a stalemate after ~w moves!~n~n', [Num]).
+
 show_winner(verbose, Winner, Num) :-
  format('~w wins after ~w moves!~n~n', [Winner,Num]).
-
 
