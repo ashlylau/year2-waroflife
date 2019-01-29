@@ -1,5 +1,6 @@
 :- [war_of_life].
 
+%%%%%%%%%%%%%%% test_strategy/3 %%%%%%%%%%%%%%%%%
 test_strategy(N, S1, S2) :-
 	count_score(N, S1, S2, NumDraws, NumWinsB, NumWinsR, Longest, Shortest, TotalLength, TotalTime), 
 	AvgLength is TotalLength/N,
@@ -12,7 +13,7 @@ test_strategy(N, S1, S2) :-
 	format('AvgLength: ~w ~n', [AvgLength]),
 	format('AvgTime: ~w ~n', [AvgTime]).
 
-
+%%%%%%%%%%%%%%% count_score/10 %%%%%%%%%%%%%%%%%%
 count_score(N, S1, S2, NumDraws, NumWinsB, NumWinsR, Longest, Shortest, TotalLength, TotalTime) :-
 	N > 0,
 	NPrev is N-1,
@@ -32,32 +33,38 @@ count_score(N, S1, S2, NumDraws, NumWinsB, NumWinsR, Longest, Shortest, TotalLen
 	TotalLength is TotalLengthPrev + NumMoves,
 	TotalTime is TotalTimePrev + Runtime.
 
-count_score(0, _, _, 0, 0, 0, 0, 1000, 0, 0). %arbitrarily large max int 
-
-
-%%%%%%USE count_score to loop and accumluate stuff???
-
-
-%write() --print to console
-%use accumulator??
-%while loop
-%aggregate_all(count, is_man(X), Count).
-%IDK WHAT I AM DOING
-%%%
+count_score(0, _, _, 0, 0, 0, 0, 10000, 0, 0). %arbitrarily large max int for initialisation 
 
 
 
 
+%%%%%%%%%%%%%%%%% STRATEGIES %%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%% STRATEGIES %%%%%%%%%
-
-% bloodlust(PlayerColour, CurrentBoardState, Move)
+% bloodlust(+PlayerColour, +CurrentBoardState, -NewBoardState, -Move)
 % chooses next move which (after Conway's crank) produces the board state with the fewest number of opponent's pieces
-%bloodlust().
+bloodlust('b', [AliveBlues, AliveReds], [NewAliveBlues, AliveReds], Move) :-
+	findall([A,B,MA,MB], (member([A,B], AliveBlues),
+												neighour_position(A,B,[MA,MB]),
+												\+member([MA,MB], AliveBlues),
+												\+member([MA,MB], AliveReds)),
+			    PossMoves),
+	min_pieces('r', [AliveBlues, AliveReds], PossMoves, Move).
+
+% chooses Move out of list of Moves that generates board state with
+% fewest number of Colour pieces after turning Conway's crank
+min_pieces('b', [AliveBlues, AliveReds], [M|Moves], Move, Min) :-
+	alter_board(M, AliveBlues, NewAliveBlues),
+	next_generation([NewAliveBlues, AliveReds], [_, CrankedAliveReds]),
+	NumOpp is length(CrankedAliveReds),
+	(NumOpp < PrevMin -> Move is M, Min is NumOpp; Move is PrevMov, Min is PrevMin),  
+	min_pieces('b', [AliveBlues, AliveReds], [Moves], PrevMove, PrevMin).
+
+min_pieces(_, CurrState, [], _, 64).
+
 
 
 % self preservation
-% chooses next move which (after Conway's crank) produces the board stte with teh largest number of that player's pieces on the board
+% chooses next move which (after Conway's crank) produces the board state with the largest number of that player's pieces on the board
 %self_preservation().
 
 
@@ -68,7 +75,7 @@ count_score(0, _, _, 0, 0, 0, 0, 1000, 0, 0). %arbitrarily large max int
 
 % minimax
 % strategy looks two-ply ahead using the heuristic measure described in the landgrab strategy. 
-% it should follo wthe minimax principle and take into account the opponent's move after the one chosen for the current player.
+% it should follow the minimax principle and take into account the opponent's move after the one chosen for the current player.
 %minimax().
 
 

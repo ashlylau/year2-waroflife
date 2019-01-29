@@ -172,7 +172,7 @@ pick_aux(N, Total, From, [E|Picked], Rest) :-
 
 %%%%% next_generation/2
 %
-% basc control for Conway next generation
+% basic control for Conway next generation
 
 next_generation(Board, [NewAliveBlues, NewAliveReds]) :-
  findall([A,B,NewW], (cell(A,B), 
@@ -194,7 +194,7 @@ what_in_cell([AliveBlues, AliveReds], A, B, ' ') :-
  \+ member([A,B], AliveBlues), 
  \+ member([A,B], AliveReds).
 
-%%%%% cchange_cell/5
+%%%%% change_cell/5
 
 change_cell([AliveBlues, AliveReds], A, B, W, NewW) :-
  findall(b, (neighbour_position(A,B,[NA,NB]),
