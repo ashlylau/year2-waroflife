@@ -1,4 +1,4 @@
-:- [war_of_life].
+%:- [war_of_life].
 
 %%%%%%%%%%%%%%% test_strategy/3 %%%%%%%%%%%%%%%%%
 test_strategy(N, S1, S2) :-
@@ -69,14 +69,14 @@ min_pieces('b', [AliveBlues, AliveReds], [M|Moves], Move, Min) :-
 	next_generation([NewAliveBlues, AliveReds], [_, CrankedAliveReds]),
 	length(CrankedAliveReds, NumOpp),
 	min_pieces('b', [AliveBlues, AliveReds], Moves, PrevMove, PrevMin),
-	(NumOpp < PrevMin -> Move is M, Min is NumOpp; Move is PrevMove, Min is PrevMin).  
+	(NumOpp < PrevMin -> Move = M, Min is NumOpp; Move = PrevMove, Min is PrevMin).  
 
 min_pieces('r', [AliveBlues, AliveReds], [M|Moves], Move, Min) :-
 	alter_board(M, AliveReds, NewAliveReds),
 	next_generation([AliveBlues, NewAliveReds], [CrankedAliveBlues, _]),
 	length(CrankedAliveBlues, NumOpp),
 	min_pieces('r', [AliveBlues, AliveReds], Moves, PrevMove, PrevMin),
-	(NumOpp < PrevMin -> Move is M, Min is NumOpp; Move is PrevMove, Min is PrevMin).  
+	(NumOpp < PrevMin -> Move = M, Min is NumOpp; Move = PrevMove, Min is PrevMin).  
 
 min_pieces(_, _, [], _, 64).
 
