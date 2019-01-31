@@ -1,4 +1,4 @@
-:- [war_of_life].
+%:- [war_of_life].
 
 %%%%%%%%%%%%%%% test_strategy/3 %%%%%%%%%%%%%%%%%
 test_strategy(N, S1, S2) :-
