@@ -44,22 +44,41 @@ count_score(0, _, _, 0, 0, 0, 0, 10000, 0, 0). %arbitrarily large max int for in
 % chooses next move which (after Conway's crank) produces the board state with the fewest number of opponent's pieces
 bloodlust('b', [AliveBlues, AliveReds], [NewAliveBlues, AliveReds], Move) :-
 	findall([A,B,MA,MB], (member([A,B], AliveBlues),
-												neighour_position(A,B,[MA,MB]),
+												neighbour_position(A,B,[MA,MB]),
 												\+member([MA,MB], AliveBlues),
 												\+member([MA,MB], AliveReds)),
 			    PossMoves),
-	min_pieces('r', [AliveBlues, AliveReds], PossMoves, Move).
+	min_pieces('b', [AliveBlues, AliveReds], PossMoves, Move, _),
+	alter_board(Move, AliveBlues, NewAliveBlues).
+
+bloodlust('r', [AliveBlues, AliveReds], [AliveBlues, NewAliveReds], Move) :-
+	findall([A,B,MA,MB], (member([A,B], AliveReds),
+												neighbour_position(A,B,[MA,MB]),
+												\+member([MA,MB], AliveReds),
+												\+member([MA,MB], AliveBlues)),
+			    PossMoves),
+	min_pieces('r', [AliveBlues, AliveReds], PossMoves, Move, _),
+	alter_board(Move, AliveReds, NewAliveReds).
+
 
 % chooses Move out of list of Moves that generates board state with
-% fewest number of Colour pieces after turning Conway's crank
+% fewest number of opponents pieces after turning Conway's crank
+% min_pieces(Colour, CurrentBoard, Moves, Move, MinNumOppPiece)
 min_pieces('b', [AliveBlues, AliveReds], [M|Moves], Move, Min) :-
 	alter_board(M, AliveBlues, NewAliveBlues),
 	next_generation([NewAliveBlues, AliveReds], [_, CrankedAliveReds]),
-	NumOpp is length(CrankedAliveReds),
-	(NumOpp < PrevMin -> Move is M, Min is NumOpp; Move is PrevMov, Min is PrevMin),  
-	min_pieces('b', [AliveBlues, AliveReds], [Moves], PrevMove, PrevMin).
+	length(CrankedAliveReds, NumOpp),
+	min_pieces('b', [AliveBlues, AliveReds], Moves, PrevMove, PrevMin),
+	(NumOpp < PrevMin -> Move is M, Min is NumOpp; Move is PrevMove, Min is PrevMin).  
 
-min_pieces(_, CurrState, [], _, 64).
+min_pieces('r', [AliveBlues, AliveReds], [M|Moves], Move, Min) :-
+	alter_board(M, AliveReds, NewAliveReds),
+	next_generation([AliveBlues, NewAliveReds], [CrankedAliveBlues, _]),
+	length(CrankedAliveBlues, NumOpp),
+	min_pieces('r', [AliveBlues, AliveReds], Moves, PrevMove, PrevMin),
+	(NumOpp < PrevMin -> Move is M, Min is NumOpp; Move is PrevMove, Min is PrevMin).  
+
+min_pieces(_, _, [], _, 64).
 
 
 
