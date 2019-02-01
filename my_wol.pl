@@ -124,7 +124,50 @@ max_pieces(_, _, [], _, 0).
 
 % land grab
 % choose next move which (after Conway's crank) produces the board state which maximises this function: NumPlayersPieces - NumOpponentPieces
-%land_grab().
+%land_grab(Colour, CurrentBoard, NextBoard, Move)
+land_grab('b', [AliveBlues, AliveReds], [NewAliveBlues, AliveReds], Move) :-
+	findall([A,B,MA,MB], (member([A,B], AliveBlues),
+												neighbour_position(A,B,[MA,MB]),
+												\+member([MA,MB], AliveBlues),
+												\+member([MA,MB], AliveReds)),
+			    PossMoves),
+	max_function('b', [AliveBlues, AliveReds], PossMoves, Move, _),
+	alter_board(Move, AliveBlues, NewAliveBlues).
+
+
+land_grab('r', [AliveBlues, AliveReds], [AliveBlues, NewAliveReds], Move) :-
+	findall([A,B,MA,MB], (member([A,B], AliveReds),
+												neighbour_position(A,B,[MA,MB]),
+												\+member([MA,MB], AliveReds),
+												\+member([MA,MB], AliveBlues)),
+			    PossMoves),
+	max_function('r', [AliveBlues, AliveReds], PossMoves, Move, _),
+	alter_board(Move, AliveReds, NewAliveReds).
+
+% max_function(Colour, CurrentBoard, Moves, Move, MaxFunctionValue)
+max_function('b', [AliveBlues, AliveReds], [M|Moves], Move, Max) :-
+	alter_board(M, AliveBlues, NewAliveBlues),
+	next_generation([NewAliveBlues, AliveReds], [CrankedAliveBlues, CrankedAliveReds]),
+	length(CrankedAliveBlues, NumPlayer),
+	length(CrankedAliveReds, NumOpp),
+	max_pieces('b', [AliveBlues, AliveReds], Moves, PrevMove, PrevMax),
+
+	Diff is NumPlayer - NumOpp,
+	(Diff > PrevMax -> Move = M, Max is Diff; Move = PrevMove, Max is PrevMax).
+
+max_function('r', [AliveBlues, AliveReds], [M|Moves], Move, Max) :-
+	alter_board(M, AliveReds, NewAliveReds),
+	next_generation([AliveBlues, NewAliveReds], [CrankedAliveBlues, CrankedAliveReds]),
+	length(CrankedAliveReds, NumPlayer),
+	length(CrankedAliveBlues, NumOpp),
+	max_pieces('r', [AliveBlues, AliveReds], Moves, PrevMove, PrevMax),
+
+	Diff is NumPlayer - NumOpp,
+	(Diff > PrevMax -> Move = M, Max is Diff; Move = PrevMove, Max is PrevMax).
+
+max_function(_, _, [], _, 64).
+
+
 
 
 % minimax
