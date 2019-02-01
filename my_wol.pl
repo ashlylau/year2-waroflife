@@ -165,7 +165,7 @@ max_function('r', [AliveBlues, AliveReds], [M|Moves], Move, Max) :-
 	Diff is NumPlayer - NumOpp,
 	(Diff > PrevMax -> Move = M, Max is Diff; Move = PrevMove, Max is PrevMax).
 
-max_function(_, _, [], _, 64).
+max_function(_, _, [], _, 0).
 
 
 
