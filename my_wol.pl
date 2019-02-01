@@ -121,10 +121,10 @@ max_pieces(_, _, [], _, 0).
 
 
 
-
 % land grab
-% choose next move which (after Conway's crank) produces the board state which maximises this function: NumPlayersPieces - NumOpponentPieces
-%land_grab(Colour, CurrentBoard, NextBoard, Move)
+% choose next move which (after Conway's crank) produces the board state which maximises 
+% this function: NumPlayersPieces - NumOpponentPieces
+% land_grab(Colour, CurrentBoard, NextBoard, Move)
 land_grab('b', [AliveBlues, AliveReds], [NewAliveBlues, AliveReds], Move) :-
 	findall([A,B,MA,MB], (member([A,B], AliveBlues),
 												neighbour_position(A,B,[MA,MB]),
@@ -152,7 +152,8 @@ max_function('b', [AliveBlues, AliveReds], [M|Moves], Move, Max) :-
 	length(CrankedAliveReds, NumOpp),
 	max_pieces('b', [AliveBlues, AliveReds], Moves, PrevMove, PrevMax),
 
-	Diff is NumPlayer - NumOpp,
+	Diff is NumPlayer-NumOpp,
+	format("NumPlayer: ~w, NumOpp: ~w, Diff: ~w ~n", [NumPlayer, NumOpp, Diff]),
 	(Diff > PrevMax -> Move = M, Max is Diff; Move = PrevMove, Max is PrevMax).
 
 max_function('r', [AliveBlues, AliveReds], [M|Moves], Move, Max) :-
@@ -162,7 +163,9 @@ max_function('r', [AliveBlues, AliveReds], [M|Moves], Move, Max) :-
 	length(CrankedAliveBlues, NumOpp),
 	max_pieces('r', [AliveBlues, AliveReds], Moves, PrevMove, PrevMax),
 
-	Diff is NumPlayer - NumOpp,
+	Diff is NumPlayer-NumOpp,
+	format("NumPlayer: ~w, NumOpp: ~w, Diff: ~w ~n", [NumPlayer, NumOpp, Diff]),
+	format("~w ~n", [Diff]),
 	(Diff > PrevMax -> Move = M, Max is Diff; Move = PrevMove, Max is PrevMax).
 
 max_function(_, _, [], _, 0).
